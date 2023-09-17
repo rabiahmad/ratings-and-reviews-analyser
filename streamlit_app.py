@@ -17,7 +17,10 @@ product_url = st.text_input(
 if st.button(label="Analyse", use_container_width=True):
     reviews = get_amazon_reviews(product_url)
 
-    result = str(analyse_reviews(reviews=reviews, openai_api_key=api_key))
+    try:
+        result = str(analyse_reviews(reviews=reviews, openai_api_key=api_key))
+    except:
+        st.error("Please provide an Open AI API Key.")
 
     tab1, tab2 = st.tabs(["Overview", "Reviews"])
     with tab1:
