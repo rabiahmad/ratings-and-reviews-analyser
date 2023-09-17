@@ -26,6 +26,7 @@ def analyse_reviews(reviews, openai_api_key=api_keygen()):
 
     Provide a paragraph summarising the key themes and sentiments in the Amazon product reviews.
     Provide short bullet point summmaries highlighting the key positive and negative points made about the product.
+    Include some specific details from the customer reviews about the product itself.
     Also provide the average rating in the form of 'Average rating: X out of 5 stars' where X is the average rating.
 
     Your answer should follow this format:
