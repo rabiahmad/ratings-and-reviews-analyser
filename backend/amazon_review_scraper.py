@@ -1,6 +1,7 @@
 import requests
 import re
-from backend.product_id_grabber import get_amazon_product_id
+from bs4 import BeautifulSoup
+from product_id_grabber import get_amazon_product_id
 
 
 def get_amazon_reviews(link, pages=1):
@@ -66,36 +67,79 @@ def get_amazon_reviews(link, pages=1):
 
         # data mining
         raw_data = response.text
-        pattern = r"<span[^>]*>([^<]+)</span>"
-        matches = re.findall(pattern, raw_data)
 
-        # add reviews to dict
-        reviews = []
-        keys = [
-            "name",
-            "rating",
-            "title",
-            "date",
-            "verified",
-            "review text",
-            "dummy(ignore)",
+        # print(raw_data)
+
+        # raw_data = raw_data.encode("unicode_escape")
+        raw_data = raw_data.replace('"', "'")
+
+        raw_data = f"""
+        {str(raw_data)}
+        """
+        print(raw_data)
+
+        # import sys
+
+        # # Define the file where you want to redirect the output
+        # output_file = "data/raw_data.txt"
+
+        # # Open the file in write mode (you can use 'a' for append mode)
+        # with open(output_file, "w") as file:
+        #     # Redirect the standard output to the file
+        #     sys.stdout = file
+
+        #     # Now, any print statements will be written to the file
+        #     print(raw_data)
+
+        # # Reset the standard output to the console
+        # sys.stdout = sys.__stdout__
+
+        # # Initialize an empty variable to store the file contents
+        # file_contents = ""
+
+        # # Open the file and read its contents
+        # try:
+        #     with open(output_file, "r", encoding="utf-8") as file:
+        #         file_contents = file.read()
+        # except FileNotFoundError:
+        #     print(f"The file '{output_file}' was not found.")
+        # except Exception as e:
+        #     print(f"An error occurred: {str(e)}")
+
+        soup = BeautifulSoup(raw_data)
+
+        # print(soup)
+
+        reviewer_names = soup.findAll("span", {"class": "a-profile-name"})
+        review_dates = soup.findAll("span", {"data-hook": "review-date"})
+        review_title = soup.findAll("a", {"data-hook": "review-title"})
+        reviews = soup.findAll("div", {"class": "a-row a-spacing-small review-data"})
+
+        print(reviewer_names)
+
+        name_list = [data.text for data in reviewer_names]
+        review_date_list = [data.text for data in review_dates]
+        review_title_list = [data.text for data in review_title]
+        review_text_list = [data.text for data in reviews]
+
+        attr_list = [
+            name_list,
+            review_date_list,
+            review_title_list,
+            review_text_list,
         ]
 
-        for i in range(0, len(matches), len(keys)):
-            if i + len(keys) <= len(matches):
-                review_data = {
-                    keys[j]: matches[i + j].strip() for j in range(len(keys) - 1)
-                }
-                reviews.append(review_data)
+        for lst in attr_list:
+            print(len(lst))
 
-        # add the reviews from this page to the list of all reviews
-        all_reviews.extend(reviews)
+        collated_data = zip(
+            name_list, review_date_list, review_title_list, review_text_list
+        )
 
-    # create reviews dict
-    reviews_dict = {"reviews": all_reviews}
-    return reviews_dict
+        for data in collated_data:
+            print(data)
 
 
 if __name__ == "__main__":
-    reviews = get_amazon_reviews(link=input("amazon product link: "), pages=1)
-    print(reviews)
+    test_url = "https://www.amazon.co.uk/Automatic-Safeguard-Guillotine-Scrapbooking-Handcraft/dp/B07QP5TJ9K/?_encoding=UTF8&pd_rd_w=VuhdR&content-id=amzn1.sym.4ba5049e-dff1-4804-8945-b98836ead4da%3Aamzn1.symc.36bd837a-d66d-47d1-8457-ffe9a9f3ddab&pf_rd_p=4ba5049e-dff1-4804-8945-b98836ead4da&pf_rd_r=3RKZE7PDV2VSDKKS6BB4&pd_rd_wg=pc697&pd_rd_r=cc73289b-ae88-4791-9ae7-5b8eea83117c&ref_=pd_gw_ci_mcx_mr_hp_atf_m"
+    reviews = get_amazon_reviews(link=test_url, pages=1)
