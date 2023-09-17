@@ -19,31 +19,31 @@ if st.button(label="Analyse", use_container_width=True):
 
     try:
         result = str(analyse_reviews(reviews=reviews, openai_api_key=api_key))
+
+        tab1, tab2 = st.tabs(["Overview", "Reviews"])
+        with tab1:
+            st.markdown(result)
+
+        with tab2:
+            reviews_list = reviews.get("reviews")
+
+            # loop through list of reviews
+            for review in reviews_list:
+                name = review.get("name")
+                title = review.get("title")
+                rating = review.get("rating")
+                review_text = review.get("review_text")
+                st.markdown(
+                    f"""
+                    ## {name}
+                    
+                    #### {title}
+                    
+                    Rating: {rating}
+                    
+                    {review_text}
+                    """
+                )
+                st.divider()
     except:
         st.error("Please provide an Open AI API Key.")
-
-    tab1, tab2 = st.tabs(["Overview", "Reviews"])
-    with tab1:
-        st.markdown(result)
-
-    with tab2:
-        reviews_list = reviews.get("reviews")
-
-        # loop through list of reviews
-        for review in reviews_list:
-            name = review.get("name")
-            title = review.get("title")
-            rating = review.get("rating")
-            review_text = review.get("review_text")
-            st.markdown(
-                f"""
-                ## {name}
-                
-                #### {title}
-                
-                Rating: {rating}
-                
-                {review_text}
-                """
-            )
-            st.divider()
