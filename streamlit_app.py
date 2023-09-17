@@ -1,5 +1,7 @@
 import streamlit as st
+from streamlit_chat import message
 from backend.review_analyser import analyse_reviews
+from backend.amazon_review_scraper import get_amazon_reviews
 
 
 st.title("Ratings and Reviews Analyser")
@@ -14,37 +16,32 @@ product_url = st.text_input(
 
 
 if st.button(label="Analyse", use_container_width=True):
-    reviews = {
-        "Review 1": {
-            "title": "Lid was broken before even used it",
-            "body-text": "Lid broken before I could use it I ordered a couple and they all came the same",
-            "rating": "1.0 out of 5 stars",
-        },
-        "Review 2": {
-            "title": "Smells nice",
-            "body-text": "Good smells lovely and gets rid of unwanted smells would stick to this brand",
-            "rating": "5.0 out of 5 stars",
-        },
-        "Review 3": {
-            "title": "Best spray on the market",
-            "body-text": "Smells very nice...lasts a long time",
-            "rating": "5.0 out of 5 stars",
-        },
-        "Review 4": {
-            "title": "Works",
-            "body-text": "Clears unwanted smells quickly leaving the air smelling lovely.",
-            "rating": "4.0 out of 5 stars",
-        },
-    }
+    reviews = get_amazon_reviews(product_url)
 
-    result = analyse_reviews(reviews=reviews, openai_api_key=api_key)
+    result = str(analyse_reviews(reviews=reviews, openai_api_key=api_key))
 
-    tab1, tab2, tab3 = st.tabs(["Overview", "XXXX", "Reviews"])
+    tab1, tab2 = st.tabs(["Overview", "Reviews"])
     with tab1:
         st.markdown(result)
 
     with tab2:
-        st.markdown("this is tab 2")
+        reviews_list = reviews.get("reviews")
 
-    with tab3:
-        st.markdown("this is tab 3")
+        # loop through list of reviews
+        for review in reviews_list:
+            name = review.get("name")
+            title = review.get("title")
+            rating = review.get("rating")
+            review_text = review.get("review_text")
+            st.markdown(
+                f"""
+                ## {name}
+                
+                #### {title}
+                
+                Rating: {rating}
+                
+                {review_text}
+                """
+            )
+            st.divider()
