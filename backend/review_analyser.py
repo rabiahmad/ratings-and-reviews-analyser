@@ -14,7 +14,7 @@ def api_keygen():
     return api_key
 
 
-def analyse_reviews(reviews, openai_api_key=api_keygen()):
+def analyse_reviews(reviews, openai_api_key):
     logger = logging.getLogger(f"{__name__}.analyse_reviews")
     logger.setLevel(logging.DEBUG)
     logger.debug(openai_api_key)
