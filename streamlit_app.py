@@ -1,5 +1,4 @@
 import streamlit as st
-from streamlit_chat import message
 from backend.review_analyser import analyse_reviews
 from backend.amazon_review_scraper import get_amazon_reviews
 
