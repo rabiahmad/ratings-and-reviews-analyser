@@ -3,7 +3,7 @@ from backend.review_analyser import analyse_reviews
 from backend.amazon_review_scraper import get_amazon_reviews
 
 
-st.title("Ratings and Reviews Analyser")
+st.title("Amazon Reviews Analyser")
 
 with st.sidebar:
     api_key = st.text_input(label="Your Open AI API Key", type="password")
